@@ -1,0 +1,43 @@
+name: Validación automática de código HTML y CSS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  revisar-codigo:
+    name: Revisión con HTMLHint y Stylelint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Instalar herramientas de validación
+        run: |
+          npm install -g htmlhint stylelint stylelint-config-standard
+
+      - name: Validar HTML
+        run: |
+          if [ -f ./src/index.html ]; then
+            htmlhint ./src/index.html
+          else
+            echo "::error file=src/index.html::No se encontró el archivo index.html"
+            exit 1
+          fi
+
+      - name: Validar CSS
+        run: |
+          if [ -f ./src/styles.css ]; then
+            echo '{ "extends": "stylelint-config-standard" }' > .stylelintrc.json
+            stylelint ./src/styles.css
+          else
+            echo "::error file=src/styles.css::No se encontró el archivo styles.css"
+            exit 1
+          fi
