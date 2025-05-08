@@ -41,3 +41,6 @@ jobs:
             echo "::error file=src/styles.css::No se encontró el archivo styles.css"
             exit 1
           fi
+      - name: Validar que tenga <nav>
+        run: |
+          grep -q "<nav>" ./src/index.html || (echo "::error file=src/index.html::Falta <nav>" && exit 1)
